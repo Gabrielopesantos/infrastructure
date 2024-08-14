@@ -22,4 +22,3 @@ resource "hcloud_ssh_key" "casper_ssh_key" {
   name       = "gabriel@casper"
   public_key = file("./ssh-pubkeys/casper.pub")
 }
-

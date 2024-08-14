@@ -9,4 +9,3 @@ output "node1_ipv4" {
 output "node1_ipv6" {
   value = hcloud_server.node1.ipv6_address
 }
-
