@@ -29,7 +29,6 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     needs:
-      - lint
       - terraform-plan
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
