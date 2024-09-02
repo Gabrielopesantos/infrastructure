@@ -32,7 +32,7 @@
             terraform-lsp
             tflint
             tfsec
-            nixfmt
+            nixfmt-classic
           ];
         };
       });
