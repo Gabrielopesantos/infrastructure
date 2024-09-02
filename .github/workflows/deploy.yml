@@ -24,14 +24,14 @@ jobs:
         id: terraform_plan
         run: |
           terraform plan -input=false -detailed-exitcode
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
+          echo "exit_code=$?" | tee -a $GITHUB_OUTPUT
 
   terraform-apply:
     name: Terraform Apply
     needs:
       - terraform-plan
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
+    if: github.ref == 'refs/heads/main' && needs.terraform-plan.outputs.exit_code == 2
     environment: terraform
 
     steps:
@@ -50,6 +50,8 @@ jobs:
 
   colmena-build:
     name: Colmena Build
+    needs:
+      - terraform-apply
     runs-on: ubuntu-latest
 
     steps:
@@ -65,7 +67,7 @@ jobs:
     needs:
       - colmena-build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     environment: production
 
     steps:
