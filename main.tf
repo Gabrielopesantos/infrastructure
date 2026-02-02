@@ -1,8 +1,8 @@
 resource "hcloud_server" "node1" {
-  name        = "node1"
-  image       = "ubuntu-24.04"
-  server_type = "cpx11"
-  location    = "nbg1"
+  name        = var.server_name
+  image       = var.server_image
+  server_type = var.server_type
+  location    = var.location
 
   ssh_keys = [
     hcloud_ssh_key.casper_ssh_key.id
@@ -13,12 +13,12 @@ resource "hcloud_server" "node1" {
   ]
 
   public_net {
-    ipv4_enabled = true
-    ipv6_enabled = true
+    ipv4_enabled = var.ipv4_enabled
+    ipv6_enabled = var.ipv6_enabled
   }
 }
 
 resource "hcloud_ssh_key" "casper_ssh_key" {
-  name       = "gabriel@casper"
-  public_key = file("./ssh-pubkeys/casper.pub")
+  name       = var.ssh_key_name
+  public_key = file(var.ssh_key_path)
 }

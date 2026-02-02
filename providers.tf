@@ -4,15 +4,7 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.48.0"
-    }
-  }
-
-  cloud {
-    organization = "SantosLabs"
-
-    workspaces {
-      name = "infrastructure"
+      version = "~>1.45.0"
     }
   }
 }
