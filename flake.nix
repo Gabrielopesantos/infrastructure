@@ -27,6 +27,9 @@
             terraform-lsp
             tflint
             tfsec
+
+            # Nixfmt
+            nixfmt
           ];
         };
       }
