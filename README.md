@@ -1,6 +1,4 @@
-# SantosLabs Infrastructure
-
-Infrastructure as Code for SantosLabs.
+# Infrastructure
 
 ## License
 
