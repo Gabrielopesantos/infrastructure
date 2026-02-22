@@ -132,9 +132,10 @@ variable "ssh_key_path" {
   default     = "./ssh-pubkeys/casper.pub"
 }
 
+# NOTE: Commented for tflint to pass
 # Volume Configuration
-variable "volume_size" {
-  description = "Size of volumes in GB"
-  type        = number
-  default     = 10
-}
+# variable "volume_size" {
+#   description = "Size of volumes in GB"
+#   type        = number
+#   default     = 10
+# }

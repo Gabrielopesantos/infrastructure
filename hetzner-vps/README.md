@@ -50,7 +50,6 @@
 | <a name="input_ssh_key_path"></a> [ssh\_key\_path](#input\_ssh\_key\_path) | Path to SSH public key file | `string` | `"./ssh-pubkeys/casper.pub"` | no |
 | <a name="input_ssh_port"></a> [ssh\_port](#input\_ssh\_port) | SSH port | `string` | `"22"` | no |
 | <a name="input_subnet_cidr"></a> [subnet\_cidr](#input\_subnet\_cidr) | CIDR range for the subnet | `string` | `"10.0.1.0/24"` | no |
-| <a name="input_volume_size"></a> [volume\_size](#input\_volume\_size) | Size of volumes in GB | `number` | `10` | no |
 
 ## Outputs
 
