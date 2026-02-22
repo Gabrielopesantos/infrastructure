@@ -1,0 +1,47 @@
+# Hetzner Cloud Token (required)
+# From: https://console.hetzner.cloud/
+# hcloud_token = "your-token-here"
+
+# Server Configuration
+# server_name         = "node1"
+# server_type         = "cpx11"
+# server_image        = "ubuntu-24.04"
+# location            = "nbg1"
+# ipv4_enabled        = true
+# ipv6_enabled        = true
+# ssh_key_name        = "gabriel@casper"
+# ssh_key_path        = "./ssh-pubkeys/casper.pub"
+
+# Network Configuration
+# network_name        = "network1"
+# network_cidr        = "10.0.0.0/16"
+# subnet_cidr         = "10.0.1.0/24"
+# network_zone        = "eu-central"
+# node1_private_ip    = "10.0.1.2"
+
+# Firewall Configuration
+# enable_ping         = true
+# enable_ssh          = true
+# ssh_port            = "22"
+# ssh_allowed_ips     = ["0.0.0.0/0", "::/0"]
+# enable_http         = true
+# enable_https        = true
+
+# Custom firewall rules example:
+# custom_firewall_rules = [
+#   {
+#     description = "PostgreSQL"
+#     protocol    = "tcp"
+#     port        = "5432"
+#     source_ips  = ["10.0.0.0/16"]  # Only allow from private network
+#   },
+#   {
+#     description = "Custom App Port"
+#     protocol    = "tcp"
+#     port        = "8080"
+#     source_ips  = ["0.0.0.0/0", "::/0"]
+#   }
+# ]
+
+# Volume Configuration
+# volume_size         = 10  # Size in GB

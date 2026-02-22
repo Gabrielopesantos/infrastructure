@@ -26,3 +26,9 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Exclude tfvars files to avoid committing secrets
+terraform.tfvars
+
+# Direnv
+.direnv

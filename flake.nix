@@ -1,30 +1,25 @@
 {
-  description = "SantosLabs Infrastructure NixOS Deployments";
+  description = "SantosLabs Infrastructure";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs = inputs@{ nixpkgs, flake-utils, ... }:
-    {
-      colmena = import ./nixos/colmena.nix (inputs // {
-        terraform-outputs = nixpkgs.lib.importJSON ./terraform-output.json;
-      });
-    } //
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    inputs@{ nixpkgs, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
-      in {
+      in
+      {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
-            cargo
-            colmena
             git-crypt
             openssl
             pre-commit
-            sops
 
             # Terraform + Linters
             terraform
@@ -32,8 +27,11 @@
             terraform-lsp
             tflint
             tfsec
-            nixfmt-classic
+
+            # Nixfmt
+            nixfmt
           ];
         };
-      });
+      }
+    );
 }
