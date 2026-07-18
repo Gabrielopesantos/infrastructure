@@ -31,6 +31,10 @@
             # Nixfmt
             nixfmt
           ];
+
+          shellHook = ''
+            alias tf='terraform'
+          '';
         };
       }
     );

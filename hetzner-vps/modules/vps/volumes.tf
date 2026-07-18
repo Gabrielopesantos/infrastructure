@@ -13,10 +13,10 @@
 #   }
 # }
 
-# Example volume attachment to node1
-# resource "hcloud_volume_attachment" "node1_data_volume" {
+# Example volume attachment
+# resource "hcloud_volume_attachment" "this_data_volume" {
 #   volume_id = hcloud_volume.data_volume.id
-#   server_id = hcloud_server.node1.id
+#   server_id = hcloud_server.this.id
 #   automount = true
 # }
 

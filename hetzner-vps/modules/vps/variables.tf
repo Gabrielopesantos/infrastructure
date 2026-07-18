@@ -1,9 +1,3 @@
-variable "hcloud_token" {
-  description = "Hetzner Cloud Token"
-  sensitive   = true
-  type        = string
-}
-
 # Network Configuration
 variable "network_name" {
   description = "Name of the private network"
@@ -29,8 +23,8 @@ variable "network_zone" {
   default     = "eu-central"
 }
 
-variable "node1_private_ip" {
-  description = "Private IP address for node1"
+variable "server_private_ip" {
+  description = "Private network IP address for the server"
   type        = string
   default     = "10.0.1.2"
 }
@@ -99,7 +93,7 @@ variable "server_type" {
 variable "server_image" {
   description = "Server OS image"
   type        = string
-  default     = "ubuntu-24.04"
+  default     = "ubuntu-26.04"
 }
 
 variable "location" {
@@ -126,10 +120,15 @@ variable "ssh_key_name" {
   default     = "gabriel@casper"
 }
 
-variable "ssh_key_path" {
-  description = "Path to SSH public key file"
+variable "ssh_public_key" {
+  description = "SSH public key content (e.g. file(\"path/to/key.pub\") from the caller)"
   type        = string
-  default     = "./ssh-pubkeys/casper.pub"
+}
+
+variable "labels" {
+  description = "Labels applied to every labelable resource (server, ssh key, firewall, network)"
+  type        = map(string)
+  default     = {}
 }
 
 # NOTE: Commented for tflint to pass
