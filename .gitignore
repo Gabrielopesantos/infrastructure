@@ -2,6 +2,11 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Reusable modules aren't init'd directly in normal use; only env root
+# directories should track a lock file. Ignore ones left behind by linting
+# tools (pre-commit-terraform) running init against a module in isolation.
+hetzner-vps/modules/**/.terraform.lock.hcl
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -28,7 +33,8 @@ override.tf.json
 terraform.rc
 
 # Exclude tfvars files to avoid committing secrets
-terraform.tfvars
+*.tfvars
 
 # Direnv
 .direnv
+.envrc.local

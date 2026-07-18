@@ -1,6 +1,7 @@
 # Firewall
-resource "hcloud_firewall" "web_server_firewall" {
-  name = "web-server"
+resource "hcloud_firewall" "this" {
+  name   = "web-server"
+  labels = var.labels
 
   # ICMP (ping)
   dynamic "rule" {
@@ -72,20 +73,21 @@ resource "hcloud_firewall" "web_server_firewall" {
 }
 
 # Private Networks
-resource "hcloud_network" "network1" {
+resource "hcloud_network" "this" {
   name     = var.network_name
   ip_range = var.network_cidr
+  labels   = var.labels
 }
 
-resource "hcloud_network_subnet" "private_network1" {
-  network_id   = hcloud_network.network1.id
+resource "hcloud_network_subnet" "this" {
+  network_id   = hcloud_network.this.id
   type         = "cloud"
   network_zone = var.network_zone
   ip_range     = var.subnet_cidr
 }
 
-resource "hcloud_server_network" "node1_private_network1" {
-  server_id  = hcloud_server.node1.id
-  network_id = hcloud_network.network1.id
-  ip         = var.node1_private_ip
+resource "hcloud_server_network" "this" {
+  server_id  = hcloud_server.this.id
+  network_id = hcloud_network.this.id
+  ip         = var.server_private_ip
 }

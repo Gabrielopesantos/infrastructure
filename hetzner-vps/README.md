@@ -1,63 +1,43 @@
 # Hetzner VPS Infrastructure
 
-<!-- BEGIN_TF_DOCS -->
-## Requirements
+Reusable Terraform module (`modules/vps/`) plus one directory per deployment (`envs/<name>/`). Each env has its own local state, its own `provider "hcloud"` block, and its own Hetzner API token - nothing is shared between environments except the module code.
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_hcloud"></a> [hcloud](#requirement\_hcloud) | ~>1.45.0 |
+State is kept local (`envs/<name>/terraform.tfstate`), gitignored, never committed. No remote backend, no Terraform workspaces: the environment directory itself is the isolation boundary. This is fine for personal, single-operator infra with no CI apply - the two real tradeoffs are no state locking and no off-machine backup, worth knowing but not a blocker here.
 
-## Providers
+## Usage
 
-| Name | Version |
-|------|---------|
-| <a name="provider_hcloud"></a> [hcloud](#provider\_hcloud) | 1.45.0 |
+```sh
+cd envs/atlas
+direnv allow                 # nested .envrc files need their own allow, see gotcha below
+terraform init
+terraform plan
+terraform apply
+```
 
-## Resources
+### Required `.envrc.local` variables
 
-| Name | Type |
-|------|------|
-| [hcloud_firewall.web_server_firewall](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall) | resource |
-| [hcloud_network.network1](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/network) | resource |
-| [hcloud_network_subnet.private_network1](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/network_subnet) | resource |
-| [hcloud_server.node1](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/server) | resource |
-| [hcloud_server_network.node1_private_network1](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/server_network) | resource |
-| [hcloud_ssh_key.casper_ssh_key](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/ssh_key) | resource |
+Secrets are never written to a tracked file - only to `envs/<name>/.envrc.local` (gitignored), sourced automatically by each env's `.envrc` (`source_up` + `source_env_if_exists .envrc.local`).
 
-## Inputs
+| Variable | Used for | Where to get it |
+|---|---|---|
+| `TF_VAR_hcloud_token` | `provider "hcloud"` auth | Hetzner Cloud Console → Security → API Tokens |
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_hcloud_token"></a> [hcloud\_token](#input\_hcloud\_token) | Hetzner Cloud Token | `string` | n/a | yes |
-| <a name="input_custom_firewall_rules"></a> [custom\_firewall\_rules](#input\_custom\_firewall\_rules) | List of custom firewall rules to add | <pre>list(object({<br/>    description = string<br/>    protocol    = string<br/>    port        = string<br/>    source_ips  = list(string)<br/>  }))</pre> | `[]` | no |
-| <a name="input_enable_http"></a> [enable\_http](#input\_enable\_http) | Enable HTTP access | `bool` | `true` | no |
-| <a name="input_enable_https"></a> [enable\_https](#input\_enable\_https) | Enable HTTPS access | `bool` | `true` | no |
-| <a name="input_enable_ping"></a> [enable\_ping](#input\_enable\_ping) | Enable ICMP (ping) access | `bool` | `true` | no |
-| <a name="input_enable_ssh"></a> [enable\_ssh](#input\_enable\_ssh) | Enable SSH access | `bool` | `true` | no |
-| <a name="input_ipv4_enabled"></a> [ipv4\_enabled](#input\_ipv4\_enabled) | Enable IPv4 | `bool` | `true` | no |
-| <a name="input_ipv6_enabled"></a> [ipv6\_enabled](#input\_ipv6\_enabled) | Enable IPv6 | `bool` | `true` | no |
-| <a name="input_location"></a> [location](#input\_location) | Server location | `string` | `"nbg1"` | no |
-| <a name="input_network_cidr"></a> [network\_cidr](#input\_network\_cidr) | CIDR range for the private network | `string` | `"10.0.0.0/16"` | no |
-| <a name="input_network_name"></a> [network\_name](#input\_network\_name) | Name of the private network | `string` | `"network1"` | no |
-| <a name="input_network_zone"></a> [network\_zone](#input\_network\_zone) | Network zone for the subnet | `string` | `"eu-central"` | no |
-| <a name="input_node1_private_ip"></a> [node1\_private\_ip](#input\_node1\_private\_ip) | Private IP address for node1 | `string` | `"10.0.1.2"` | no |
-| <a name="input_server_image"></a> [server\_image](#input\_server\_image) | Server OS image | `string` | `"ubuntu-24.04"` | no |
-| <a name="input_server_name"></a> [server\_name](#input\_server\_name) | Name of the server | `string` | `"node1"` | no |
-| <a name="input_server_type"></a> [server\_type](#input\_server\_type) | Server type (size) | `string` | `"cpx11"` | no |
-| <a name="input_ssh_allowed_ips"></a> [ssh\_allowed\_ips](#input\_ssh\_allowed\_ips) | List of IPs allowed to SSH (use 0.0.0.0/0 and ::/0 for all) | `list(string)` | <pre>[<br/>  "0.0.0.0/0",<br/>  "::/0"<br/>]</pre> | no |
-| <a name="input_ssh_key_name"></a> [ssh\_key\_name](#input\_ssh\_key\_name) | Name for the SSH key in Hetzner | `string` | `"gabriel@casper"` | no |
-| <a name="input_ssh_key_path"></a> [ssh\_key\_path](#input\_ssh\_key\_path) | Path to SSH public key file | `string` | `"./ssh-pubkeys/casper.pub"` | no |
-| <a name="input_ssh_port"></a> [ssh\_port](#input\_ssh\_port) | SSH port | `string` | `"22"` | no |
-| <a name="input_subnet_cidr"></a> [subnet\_cidr](#input\_subnet\_cidr) | CIDR range for the subnet | `string` | `"10.0.1.0/24"` | no |
+```sh
+# envs/<name>/.envrc.local
+export TF_VAR_hcloud_token="..."
+```
 
-## Outputs
+**Gotcha:** direnv requires `direnv allow` separately for *each* `.envrc` file, including nested ones - allowing the repo root doesn't cascade to `envs/<name>/.envrc`. If vars aren't loading, `direnv status` from inside the env dir will show the env's `.envrc` as "Found" but not "Loaded"; run `direnv allow` from that directory to fix it.
 
-| Name | Description |
-|------|-------------|
-| <a name="output_network_cidr"></a> [network\_cidr](#output\_network\_cidr) | CIDR range of the private network |
-| <a name="output_network_id"></a> [network\_id](#output\_network\_id) | ID of the private network |
-| <a name="output_node1_internal_ip"></a> [node1\_internal\_ip](#output\_node1\_internal\_ip) | Private network IP address of node1 |
-| <a name="output_node1_ipv4"></a> [node1\_ipv4](#output\_node1\_ipv4) | Public IPv4 address of node1 |
-| <a name="output_node1_ipv6"></a> [node1\_ipv6](#output\_node1\_ipv6) | Public IPv6 address of node1 |
-<!-- END_TF_DOCS -->
+**Don't debug with `direnv export` / bare `env`** - they print resolved secret values to stdout. If you ever do and the output lands somewhere logged (a screen share, an AI tool, a CI log), treat those secrets as compromised and rotate them.
+
+## Adding a new environment
+
+```sh
+cp -r envs/atlas envs/<new-name>
+rm -rf envs/<new-name>/.terraform envs/<new-name>/.terraform.lock.hcl envs/<new-name>/.envrc.local
+```
+
+Edit `envs/<new-name>/main.tf` to override any `module "vps"` inputs that should differ (server name, location, network CIDR, etc. - see `modules/vps/README.md` for the full input list). Set the new environment's `hcloud_token` via its own `.envrc.local` (a different Hetzner project typically means a different token). Then `terraform init` fresh - no changes needed to `modules/vps/`.
+
+See `modules/vps/README.md` for the module's full inputs/outputs/resources reference.
