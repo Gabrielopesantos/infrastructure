@@ -1,24 +1,27 @@
-resource "hcloud_server" "node1" {
+resource "hcloud_server" "this" {
   name        = var.server_name
   image       = var.server_image
   server_type = var.server_type
   location    = var.location
 
   ssh_keys = [
-    hcloud_ssh_key.casper_ssh_key.id
+    hcloud_ssh_key.this.id
   ]
 
   firewall_ids = [
-    hcloud_firewall.web_server_firewall.id,
+    hcloud_firewall.this.id,
   ]
 
   public_net {
     ipv4_enabled = var.ipv4_enabled
     ipv6_enabled = var.ipv6_enabled
   }
+
+  labels = var.labels
 }
 
-resource "hcloud_ssh_key" "casper_ssh_key" {
+resource "hcloud_ssh_key" "this" {
   name       = var.ssh_key_name
-  public_key = file(var.ssh_key_path)
+  public_key = var.ssh_public_key
+  labels     = var.labels
 }
